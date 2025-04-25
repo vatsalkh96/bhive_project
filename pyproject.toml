@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "brokerage-app"
+version = "0.1.0"
+description = ""
+authors = ["vatsal14 <vatsal@opareviews.com>"]
+readme = "README.md"
+packages = [{include = "brokerage_app"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.115.12"
+sqlalchemy = "^2.0.40"
+
+
+[tool.poetry.group.dev.dependencies]
+ipython = "^9.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
