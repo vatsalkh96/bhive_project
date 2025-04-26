@@ -22,5 +22,5 @@ class PortfolioTransaction(Base):
     scheme_code = Column(Integer, ForeignKey("scheme.scheme_code", ondelete="CASCADE"), nullable=False)
 
     # Relationships
-    user = relationship("User", back_populates="portfolio_transactions")  # changed from backref to back_populates
-    scheme = relationship("Scheme", back_populates="portfolio_transactions")  # changed from backref to back_populates
+    user = relationship("User", back_populates="portfolio_transactions")  
+    scheme = relationship("Scheme", back_populates="portfolio_transactions") 

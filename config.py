@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     DB_USER: str = os.getenv("DB_USER")
     DB_PASSWORD: str = os.getenv("DB_PASSWORD")
     RAPIDAPI_KEY: str = os.getenv("RAPIDAPI_KEY")
-    LATEST_MUTUALFUND_URL: HttpUrl = os.getenv("LATEST_MUTUALFUND_URL")
+    LATEST_MUTUALFUND_URL: str = os.getenv("LATEST_MUTUALFUND_URL")
     LATEST_MUTUALFUND_HOST: str = os.getenv("LATEST_MUTUALFUND_HOST")
 
     @property

@@ -115,7 +115,7 @@ class LatestSchemeResponse(BaseModel):
     net_asset_value: float = Field(..., alias="Net_Asset_Value")
     scheme_type: str = Field(..., alias="Scheme_Type")
     scheme_category: str = Field(..., alias="Scheme_Category")
-    mutual_fund_family: str = Field(..., alias="Mutual_Fund_Family")  # Assuming FundFamily is str here
+    mutual_fund_family: str = Field(..., alias="Mutual_Fund_Family")  
     start_date_str: str = Field(..., alias="Date")
     start_date: datetime.date | None = None
 

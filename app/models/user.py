@@ -23,7 +23,7 @@ class User(Base):
     
     last_login = Column(DateTime(timezone=True), default=func.now())
 
-    portfolio_transactions = relationship('PortfolioTransaction', back_populates='user', cascade='all, delete-orphan')  # unchanged
+    portfolio_transactions = relationship('PortfolioTransaction', back_populates='user', cascade='all, delete-orphan')  
 
 
     def set_password(self, password: str):

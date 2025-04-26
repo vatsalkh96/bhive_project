@@ -9,11 +9,9 @@ async def get_db() -> AsyncGenerator:
 
 
 @asynccontextmanager
-async def get_http_client():
+async def get_http_client() -> AsyncGenerator[httpx.AsyncClient, None]:
     client = httpx.AsyncClient(timeout=10.0)
     try:
         yield client
     finally:
         await client.aclose()
-
-

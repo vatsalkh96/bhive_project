@@ -30,11 +30,6 @@ async def get_user_portfolio(user: User, db: AsyncSession) -> Portfolio:
 
     total = (await db.execute(select(func.count(func.distinct(PortfolioTransaction.scheme_code))).where(PortfolioTransaction.user_id == user.id))).scalar()
 
-    print("*********************** investments!! ")
-    print(investments[0]._mapping)
-    print("************ TOTAL")
-    print(total)
-
     return Portfolio.model_validate({'data': [i._mapping for i in investments], 'total': total})
 
 
@@ -75,7 +70,5 @@ async def get_portfolio_transactions_for_user(
     ).scalars().all()
 
     total = (await db.execute(select(func.count(1)).where(PortfolioTransaction.scheme_code == scheme_code))).scalar()
-
-    print("TRANSATINS**********************************************************************")
 
     return {'data': transactions, 'total': total}

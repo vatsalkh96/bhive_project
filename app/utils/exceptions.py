@@ -1,9 +1,5 @@
 import re
 
-from fastapi import Request
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel
-from sqlalchemy.exc import IntegrityError
 from starlette import status
 
 
@@ -81,13 +77,6 @@ class UnprocessableEntityException(AppBaseException):
     status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
-# class TooManyRequestsException(BaseException):
-#     """
-#     Exception if the parameter passed are not valid
-#     """
-
-#     status_code = status.HTTP_429_TOO_MANY_REQUESTS
-
 
 class ForbiddenException(AppBaseException):
     """
@@ -105,55 +94,3 @@ class UnauthorizedException(AppBaseException):
     status_code = status.HTTP_401_UNAUTHORIZED
 
 
-# class CannotModifyAttributeException(UnprocessableEntityException):
-#     """
-#     Exception if the parameter passed cannot be modified
-#     """
-
-#     def __init__(self, field: str, value):
-#         message = f'{field} cannot be modified'
-#         payload = {'detail': [{'loc': [field], 'msg': f'{field} cannot be modified', 'type': 'cannot_modify'}]}
-#         super().__init__(message=message, payload=payload)
-
-
-# class AttributeValueException(UnprocessableEntityException):
-#     """
-#     Exception if the parameter passed cannot be modified
-#     """
-
-#     def __init__(self, field: str, value, message: str | None = None):
-#         if isinstance(value, dict) or isinstance(value, BaseModel) or isinstance(value, list):
-#             field_value = 'the one provided'
-#         else:
-#             field_value = f'{value}'
-#         message = f'{field} should not be {field_value}' if not message else message
-#         payload = {'detail': [{'msg': f'{field} should not be {field_value}', 'type': 'value_error'}]}
-#         super().__init__(message=message, payload=payload)
-
-
-# async def sqlalchemy_exception_handler(request: Request, exc: IntegrityError):
-#     # https://stackoverflow.com/questions/55133384/make-sqlalchemy-errors-more-user-friendly-and-detailed
-#     if not exc.orig:
-#         raise exc
-#     pattern = r'^.*?Key\s+\((?P<key>.*)\)=\((?P<value>.*)\)\s+already\s+exists.*$'
-#     match = re.match(pattern, re.sub(r'\n|\r', ' ', exc.orig.args[0]))
-#     # raise exc.orig
-#     if match and match.groups():
-#         field, value = match.groups()
-#         http_exc = ConflictException(field=field, value=value)
-#         return JSONResponse(status_code=http_exc.status_code, content=http_exc.to_dict())
-#     raise exc.orig
-
-
-# def is_key_conflict_exception(exc: IntegrityError):
-#     if not exc.orig:
-#         raise exc
-#     pattern = r'^.*?Key\s+\((?P<key>.*)\)=\((?P<value>.*)\)\s+already\s+exists.*$'
-#     match = re.match(pattern, re.sub(r'\n|\r', ' ', exc.orig.args[0]))
-#     if match and match.groups():
-#         return True
-#     return False
-
-
-# async def app_exception_handler(request: Request, exc: BaseException):
-#     return JSONResponse(status_code=exc.status_code, content=exc.to_dict())

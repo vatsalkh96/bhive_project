@@ -22,7 +22,7 @@ class UserResponse(UserBase):
     last_login: datetime.datetime
 
     model_config = ConfigDict(
-        from_attributes=True,  # Enables conversion from SQLAlchemy models
+        from_attributes=True, 
         populate_by_name=True
     )
 

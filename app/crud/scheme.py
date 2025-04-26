@@ -1,22 +1,14 @@
-import datetime
-from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import update, select, func, orm
+from sqlalchemy import  select, func, orm
 from app.models import User, Scheme
-from app.schemas.scheme import FundFamily, SchemeQuery, SchemeType, SchemeResponseFull, SchemeResultSet, LatestSchemeResponse
-from app.schemas.user import UserCreate, UserPatch, UserResponse
-from app.schemas.auth import Login
-from app.utils.helpers import create_hash
-from fastapi import Depends, Header
-from app.deps import get_db
-from app.utils.exceptions import BadRequestException, NotFoundException, UnauthorizedException
+from app.schemas.scheme import FundFamily, SchemeCreate, SchemeQuery, SchemeType, SchemeResponseFull, SchemeResultSet, LatestSchemeResponse
+from app.utils.exceptions import NotFoundException
 from httpx import AsyncClient
 from config import settings
-
+from pydantic import TypeAdapter
 
 
 async def fetch_latest_schemes_data(
-    httpx_client: AsyncClient,
     scheme_type: SchemeType, 
     fund_family: FundFamily | None = None, 
     scheme_code: int | None = None, 
@@ -35,28 +27,28 @@ async def fetch_latest_schemes_data(
     if fund_family:
         params['Mutual_Fund_Family'] = fund_family
 
-    response = await httpx_client.get(settings.LATEST_MUTUALFUND_URL, headers=headers, params=params)
-
-    if response.status_code != 200:
-        return
-    
-    try:
-        response_json = await response.json()
-        if not response_json:
+    async with AsyncClient() as client:
+        response = await client.get(settings.LATEST_MUTUALFUND_URL, headers=headers, params=params)
+        if response.status_code != 200:
             return
         
-        return LatestSchemeResponse.model_validate(response_json)
-    
-    except Exception:
-        # Can add logging statements for visibility and error discovery
-        return
+        try:
+            response_json = response.json()
+            if not response_json:
+                return
+            
+            return TypeAdapter(list[LatestSchemeResponse]).validate_python(response_json)
+        
+        except Exception:
+            # Can add logging statements for visibility and error discovery
+            return
 
 
 async def get_schemes(user: User, db: AsyncSession, query_params: SchemeQuery) -> SchemeResultSet:
     schemes = (
         await db.execute(
             select(Scheme)
-            # .options(orm.load_only(Scheme.scheme_code, Scheme.mutual_fund_family, Scheme.scheme_name))
+            .options(orm.load_only(Scheme.scheme_code, Scheme.mutual_fund_family, Scheme.scheme_name))
             .where(
                 Scheme.mutual_fund_family == query_params.mutual_fund_family,
                 Scheme.scheme_type == query_params.scheme_type
@@ -94,9 +86,12 @@ async def get_sceheme_by_code(user: User, db: AsyncSession, scheme_code: int, ht
         raise NotFoundException(f'Cannot find scheme: {scheme_code}')
     
     if scheme.needs_refresh:
-        latest_scheme_snapshot = await fetch_latest_schemes_data(httpx_client, scheme.scheme_type, scheme_code=scheme.scheme_code)
+        latest_scheme_snapshot = await fetch_latest_schemes_data(scheme.scheme_type, scheme_code=scheme.scheme_code)
 
-        for field, value in latest_scheme_snapshot.model_dump(exclude = {'scheme_code'}):
+        if not latest_scheme_snapshot:
+            return scheme
+
+        for field, value in SchemeCreate.model_validate(latest_scheme_snapshot[0]).model_dump(exclude = {'scheme_code'}).items():
             # Can add some sanity check to see if the correct scheme code is returned or not. 
             setattr(scheme, field, value)
 
