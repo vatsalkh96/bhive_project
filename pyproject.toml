@@ -10,6 +10,16 @@ packages = [{include = "brokerage_app"}]
 python = "^3.11"
 fastapi = "^0.115.12"
 sqlalchemy = "^2.0.40"
+dotenv = "^0.9.9"
+alembic = "^1.15.2"
+pydantic-settings = "^2.9.1"
+asyncpg = "^0.30.0"
+psycopg2 = "^2.9.10"
+passlib = "^1.7.4"
+requests = "^2.32.3"
+httpx = "^0.28.1"
+uvicorn = "^0.34.2"
+pydantic = {extras = ["email"], version = "^2.11.3"}
 
 
 [tool.poetry.group.dev.dependencies]
